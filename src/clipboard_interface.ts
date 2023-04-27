@@ -1,4 +1,4 @@
-import {URL } from "node:url";
+import { URL } from "node:url";
 enum ClipboardType {
   Unknown = -1,
   Html = 0,
@@ -6,19 +6,14 @@ enum ClipboardType {
   Image,
 }
 
-
 interface IClipboard {
   getContentType(): Promise<ClipboardType>;
-  getImage(): Promise<string>;
+  getImage(imagePath:string): Promise<string>;
   getTextPlain(): Promise<string>;
   getTextHtml(): Promise<string>;
-  copyImage(imageFile: URL): Promise<Boolean>;
-  copyTextPlain(textFile: URL): Promise<Boolean>;
-  copyTextHtml(htmlFile: URL): Promise<Boolean>;
+  copyImage(imageFile: URL): Promise<boolean>;
+  copyTextPlain(textFile: URL): Promise<boolean>;
+  copyTextHtml(htmlFile: URL): Promise<boolean>;
 }
 
-
-
-export { 
-  ClipboardType,IClipboard
-};
+export { ClipboardType, IClipboard };

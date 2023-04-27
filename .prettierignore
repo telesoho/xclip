@@ -1,0 +1,7 @@
+out
+out_test
+node_modules
+.vscode
+.vscode-test
+/test/test-data/
+/coverage/

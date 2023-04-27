@@ -2,8 +2,8 @@ import { fileURLToPath, URL } from "node:url";
 import { ClipboardType, IClipboard } from "../clipboard_interface";
 import { getShell } from "../os";
 import * as path from "path";
+import { stripFinalNewline } from '../utils';
 
-// const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /**
  * Detected the type of content in the clipboard
  * Detect order: Image > Html > Text
@@ -44,13 +44,16 @@ function detectType(types: string[]): ClipboardType {
 }
 
 class Win10Clipboard implements IClipboard {
-  copyImage(imageFile: URL): Promise<Boolean> {
-    throw new Error("Method not implemented.");
-  }
-  async copyTextPlain(textFile: URL): Promise<Boolean> {
-    const textFilePath = fileURLToPath(textFile);
-    const script = path.join(__dirname, "../../res/scripts/", "win32_set_clipboard_text_plain.ps1");
-    const params = [textFilePath]
+  SCRIPT_PATH = "../../res/scripts/";
+  
+  async copyImage(imageFile: URL): Promise<boolean> {
+    const imageFilePath = fileURLToPath(imageFile);
+    const script = path.join(
+      __dirname,
+      this.SCRIPT_PATH,
+      "win32_set_clipboard_png.ps1"
+    );
+    const params = [imageFilePath];
 
     try {
       const shell = getShell();
@@ -58,13 +61,48 @@ class Win10Clipboard implements IClipboard {
       return true;
     } catch (e) {
       return false;
-    }      
+    }
   }
-  copyTextHtml(htmlFile: URL): Promise<Boolean> {
-    throw new Error("Method not implemented.");
+  async copyTextPlain(textFile: URL): Promise<boolean> {
+    const textFilePath = fileURLToPath(textFile);
+    const script = path.join(
+      __dirname,
+      this.SCRIPT_PATH,
+      "win32_set_clipboard_text_plain.ps1"
+    );
+    const params = [textFilePath];
+
+    try {
+      const shell = getShell();
+      await shell.runScript(script, params);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  async copyTextHtml(htmlFile: URL): Promise<boolean> {
+    const htmlFilePath = fileURLToPath(htmlFile);
+    const script = path.join(
+      __dirname,
+      this.SCRIPT_PATH,
+      "win32_set_clipboard_text_html.ps1"
+    );
+    const params = [htmlFilePath];
+
+    try {
+      const shell = getShell();
+      await shell.runScript(script, params);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
   async getContentType(): Promise<ClipboardType> {
-    const script = path.join(__dirname, "../../res/scripts/", "win32_get_clipboard_content_type.ps1");
+    const script = path.join(
+      __dirname,
+      this.SCRIPT_PATH,
+      "win32_get_clipboard_content_type.ps1"
+    );
     try {
       const shell = getShell();
 
@@ -77,16 +115,39 @@ class Win10Clipboard implements IClipboard {
       return ClipboardType.Unknown;
     }
   }
-  getImage(): Promise<string> {
-    throw new Error("Method not implemented.");
-  }
-  getTextPlain(): Promise<string> {
-    throw new Error("Method not implemented.");
-  }
-  getTextHtml(): Promise<string> {
-    throw new Error("Method not implemented.");
+  async getImage(imagePath:string): Promise<string> {
+    if (!imagePath) return "";
+    const script = path.join(
+      __dirname,
+      this.SCRIPT_PATH,
+      "win32_save_clipboard_png.ps1"
+    );
+    const shell = getShell();
+    const data: string = await shell.runScript(script, [imagePath]);
+    return stripFinalNewline(data);
   }
 
+  async getTextPlain(): Promise<string> {
+    const script = path.join(
+      __dirname,
+      this.SCRIPT_PATH,
+      "win32_get_clipboard_text_plain.ps1"
+    );
+    const shell = getShell();
+    const data:string = await shell.runScript(script);
+    return stripFinalNewline(data);
+  }
+
+  async getTextHtml(): Promise<string> {
+    const script = path.join(
+      __dirname,
+      this.SCRIPT_PATH,
+      "win32_get_clipboard_text_html.ps1"
+    );
+    const shell = getShell();
+    const data:string = await shell.runScript(script);
+    return stripFinalNewline(data);
+  }
 }
 
-export { Win10Clipboard, detectType};
+export { Win10Clipboard, detectType };

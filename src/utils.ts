@@ -5,7 +5,6 @@ import * as path from "path";
 import { mkdir } from "shelljs";
 import * as fs from "fs";
 
-
 /**
  * prepare directory for specified file.
  * @param filePath
@@ -19,7 +18,6 @@ function prepareDirForFile(filePath: string) {
   }
   return true;
 }
-
 
 // /**
 //  * @description fetches the file from given URL and saves it in the filepath
@@ -84,19 +82,38 @@ function prepareDirForFile(filePath: string) {
 //   });
 // }
 
-
 /**
  * Encode local file data to base64 encoded string
  * @param file
  * @returns base64 code string
  */
-function base64Encode(file:string) {
+function base64Encode(file: string) {
   const bitmap = fs.readFileSync(file);
   return Buffer.from(bitmap).toString("base64");
 }
 
+/**
+ * 
+ * @param input 
+ * @returns 
+ */
+function stripFinalNewline(input:string) {
+	const LF = typeof input === 'string' ? '\n' : '\n'.charCodeAt(0);
+	const CR = typeof input === 'string' ? '\r' : '\r'.charCodeAt(0);
+
+	if (input[input.length - 1] === LF) {
+		input = input.slice(0, -1);
+	}
+
+	if (input[input.length - 1] === CR) {
+		input = input.slice(0, -1);
+	}
+
+	return input;
+}
 export {
   prepareDirForFile,
   // fetchAndSaveFile,
+  stripFinalNewline,
   base64Encode,
 };

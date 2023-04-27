@@ -1,31 +1,8 @@
 import * as os from "os";
 import { spawn } from "child_process";
 import isWsl from "is-wsl";
-import { ClipboardType, IClipboard } from "./clipboard_interface";
+import { IClipboard } from "./clipboard_interface";
 import { Win10Clipboard } from "./clipboard/win10";
-
-
-function darwin_HextoHtml(str: string) {
-  const regex = /«data HTML(.*?)»/;
-
-  // Alternative syntax using RegExp constructor
-  // const regex = new RegExp('«data HTML(.*?)»', '')
-
-  const subst = `$1`;
-
-  // The substituted value will be contained in the result variable
-  const data = str.replace(regex, subst);
-
-  let buff = Buffer.from(data, "hex");
-  return buff.toString("utf8");
-}
-
-async function wslSafe(path: string) {
-  if (getCurrentPlatform() != "wsl") return path;
-  await runCommand("touch", [path]);
-  return runCommand("wslpath", ["-m", path]);
-}
-
 
 export type Platform = "darwin" | "win32" | "win10" | "linux" | "wsl";
 
@@ -57,7 +34,6 @@ export function getShell(): IShell {
       throw new Error("Unsupported platform");
   }
 }
-
 
 /**
  * Run command and get stdout
@@ -132,4 +108,3 @@ class Win10Shell implements IShell {
     return stdout;
   }
 }
-
