@@ -4,6 +4,7 @@ import isWsl from "is-wsl";
 import { IClipboard } from "./clipboard_interface";
 import { Win10Clipboard } from "./clipboard/win10";
 import { LinuxClipboard } from "./clipboard/linux";
+import { DarwinClipboard } from "./clipboard/darwin";
 
 export type Platform = "darwin" | "win32" | "win10" | "linux" | "wsl";
 
@@ -33,6 +34,8 @@ export function getShell(): IShell {
       return new Win10Shell();
     case "linux":
       return new LinuxShell();
+    case "darwin":
+      return new DarwinShell();
     default:
       throw new Error("Unsupported platform");
   }
@@ -118,6 +121,19 @@ class LinuxShell implements IShell {
   }
   async runScript(script: string, parameters: string[]): Promise<string> {
     const shell = "sh";
+    const command = [script].concat(parameters);
+    const stdout = await runCommand(shell, command);
+    return stdout;
+  }
+}
+
+
+class DarwinShell implements IShell {
+  getClipboard(): IClipboard {
+    return new DarwinClipboard();
+  }
+  async runScript(script: string, parameters: string[]): Promise<string> {
+    const shell = "osascript";
     const command = [script].concat(parameters);
     const stdout = await runCommand(shell, command);
     return stdout;
