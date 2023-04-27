@@ -2,20 +2,24 @@
 param($imagePath)
 
 # https://github.com/PowerShell/PowerShell/issues/7233
-# fix the output encoding bug
-[console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
-
+add-type -an system.windows.forms
 Add-Type -Assembly PresentationCore
+
+# fix the output encoding bug
+[Console]::InputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+$noImage = "no image"
+
 function main {
     $img = [Windows.Clipboard]::GetImage()
 
-    if ($img -eq $null) {
-        "no image"
+    if ($null -eq $img) {
+        [Console]::WriteLine($noImage)
         Exit 1
     }
 
     if (-not $imagePath) {
-        "no image"
+        [Console]::WriteLine($noImage)
         Exit 1
     }
 
@@ -26,16 +30,13 @@ function main {
     $encoder.Save($stream) | out-null
     $stream.Dispose() | out-null
 
-    $imagePath
-    # fix windows 10 native cmd crash bug when "picgo upload"
-    # https://github.com/PicGo/PicGo-Core/issues/32
-    Exit 1
+    [Console]::WriteLine($imagePath)
 }
 
 try {
     # For WIN10
     $file = Get-Clipboard -Format FileDropList
-    if ($file -ne $null) {
+    if ($null -ne $file) {
         Convert-Path $file
         Exit 1
     }

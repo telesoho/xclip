@@ -120,7 +120,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win10_save_clipboard_png.ps1"
+      "win32_save_clipboard_png.ps1"
     );
     const shell = getShell();
     const data: string = await shell.runScript(script, [imagePath]);

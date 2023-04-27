@@ -3,6 +3,7 @@ import { spawn } from "child_process";
 import isWsl from "is-wsl";
 import { IClipboard } from "./clipboard_interface";
 import { Win10Clipboard } from "./clipboard/win10";
+import { LinuxClipboard } from "./clipboard/linux";
 
 export type Platform = "darwin" | "win32" | "win10" | "linux" | "wsl";
 
@@ -30,6 +31,8 @@ export function getShell(): IShell {
   switch (platform) {
     case "win10":
       return new Win10Shell();
+    case "linux":
+      return new LinuxShell();
     default:
       throw new Error("Unsupported platform");
   }
@@ -104,6 +107,18 @@ class Win10Shell implements IShell {
       script,
     ].concat(parameters);
 
+    const stdout = await runCommand(shell, command);
+    return stdout;
+  }
+}
+
+class LinuxShell implements IShell {
+  getClipboard(): IClipboard {
+    return new LinuxClipboard();
+  }
+  async runScript(script: string, parameters: string[]): Promise<string> {
+    const shell = "sh";
+    const command = [script].concat(parameters);
     const stdout = await runCommand(shell, command);
     return stdout;
   }

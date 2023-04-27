@@ -18,16 +18,16 @@ function detectType(types: string[]): ClipboardType {
   const detectedTypes = new Set();
   for (const type of types) {
     switch (type) {
-      case "PNG":
-      case "Bitmap":
-      case "DeviceIndependentBitmap":
+      case "no xclip":
+        console.error("You need to install xclip command first.");
+        return ClipboardType.Unknown;
+      case "image/png":
         detectedTypes.add(ClipboardType.Image);
         break;
-      case "HTML Format":
+      case "text/html":
         detectedTypes.add(ClipboardType.Html);
         break;
-      case "Text":
-      case "UnicodeText":
+      default:
         detectedTypes.add(ClipboardType.Text);
         break;
     }
@@ -43,7 +43,7 @@ function detectType(types: string[]): ClipboardType {
   return ClipboardType.Unknown;
 }
 
-class Win10Clipboard implements IClipboard {
+class LinuxClipboard implements IClipboard {
   SCRIPT_PATH = "../../res/scripts/";
 
   async copyImage(imageFile: URL): Promise<boolean> {
@@ -51,7 +51,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win32_set_clipboard_png.ps1"
+      "linux_set_clipboard_png.ps1"
     );
     const params = [imageFilePath];
 
@@ -68,7 +68,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win32_set_clipboard_text_plain.ps1"
+      "linux_set_clipboard_text_plain.ps1"
     );
     const params = [textFilePath];
 
@@ -85,7 +85,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win32_set_clipboard_text_html.ps1"
+      "linux_set_clipboard_text_html.ps1"
     );
     const params = [htmlFilePath];
 
@@ -101,7 +101,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win32_get_clipboard_content_type.ps1"
+      "linux_get_clipboard_content_type.ps1"
     );
     try {
       const shell = getShell();
@@ -120,7 +120,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win10_save_clipboard_png.ps1"
+      "linux_save_clipboard_png.ps1"
     );
     const shell = getShell();
     const data: string = await shell.runScript(script, [imagePath]);
@@ -131,7 +131,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win32_get_clipboard_text_plain.ps1"
+      "linux_get_clipboard_text_plain.ps1"
     );
     const shell = getShell();
     const data: string = await shell.runScript(script);
@@ -142,7 +142,7 @@ class Win10Clipboard implements IClipboard {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
-      "win32_get_clipboard_text_html.ps1"
+      "linux_get_clipboard_text_html.ps1"
     );
     const shell = getShell();
     const data: string = await shell.runScript(script);
@@ -150,4 +150,4 @@ class Win10Clipboard implements IClipboard {
   }
 }
 
-export { Win10Clipboard, detectType };
+export { LinuxClipboard, detectType };

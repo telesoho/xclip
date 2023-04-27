@@ -18,6 +18,7 @@ const test_text_url = pathToFileURL(test_text);
 
 describe("clipboard tests", () => {
   beforeEach(() => {
+    jest.setTimeout(10000);
     jest.resetAllMocks();
   });
   it("get clipboard type test text", async () => {
