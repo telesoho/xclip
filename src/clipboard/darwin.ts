@@ -4,7 +4,6 @@ import { getShell } from "../os";
 import * as path from "path";
 import { stripFinalNewline } from "../utils";
 
-
 function darwin_HextoHtml(str: string) {
   const regex = /«data HTML(.*?)»/;
 
@@ -16,7 +15,7 @@ function darwin_HextoHtml(str: string) {
   // The substituted value will be contained in the result variable
   const data = str.replace(regex, subst);
 
-  let buff = Buffer.from(data, "hex");
+  const buff = Buffer.from(data, "hex");
   return buff.toString("utf8");
 }
 
@@ -159,7 +158,7 @@ class DarwinClipboard implements IClipboard {
     );
     const shell = getShell();
     const data: string = await shell.runScript(script);
-    return darwin_HextoHtml(stripFinalNewline(data));    
+    return darwin_HextoHtml(stripFinalNewline(data));
   }
 }
 

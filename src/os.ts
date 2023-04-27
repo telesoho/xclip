@@ -127,7 +127,6 @@ class LinuxShell implements IShell {
   }
 }
 
-
 class DarwinShell implements IShell {
   getClipboard(): IClipboard {
     return new DarwinClipboard();
