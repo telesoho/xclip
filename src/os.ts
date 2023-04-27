@@ -46,10 +46,10 @@ function runCommand(
   timeout = 10000
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    let errorTriggered: boolean = false;
-    let output: string = "";
-    let errorMessage: string = "";
-    let process = spawn(shell, options, { timeout });
+    let errorTriggered = false;
+    let output = "";
+    let errorMessage = "";
+    const process = spawn(shell, options, { timeout });
 
     process.stdout.on("data", (chunk) => {
       output += `${chunk}`;
@@ -59,7 +59,7 @@ function runCommand(
       errorMessage += `${chunk}`;
     });
 
-    process.on("exit", (code, signal) => {
+    process.on("exit", (code) => {
       if (process.killed) {
         console.log("Process took too long and was killed");
       }

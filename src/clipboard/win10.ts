@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 import { ClipboardType, IClipboard } from "../clipboard_interface";
 import { getShell } from "../os";
 import * as path from "path";
-import { stripFinalNewline } from '../utils';
+import { stripFinalNewline } from "../utils";
 
 /**
  * Detected the type of content in the clipboard
@@ -45,7 +45,7 @@ function detectType(types: string[]): ClipboardType {
 
 class Win10Clipboard implements IClipboard {
   SCRIPT_PATH = "../../res/scripts/";
-  
+
   async copyImage(imageFile: URL): Promise<boolean> {
     const imageFilePath = fileURLToPath(imageFile);
     const script = path.join(
@@ -106,16 +106,16 @@ class Win10Clipboard implements IClipboard {
     try {
       const shell = getShell();
 
-      let data = await shell.runScript(script);
+      const data = await shell.runScript(script);
       console.debug("getClipboardContentType", data);
-      let types = data.split(/\r\n|\n|\r/);
+      const types = data.split(/\r\n|\n|\r/);
 
       return detectType(types);
     } catch (e) {
       return ClipboardType.Unknown;
     }
   }
-  async getImage(imagePath:string): Promise<string> {
+  async getImage(imagePath: string): Promise<string> {
     if (!imagePath) return "";
     const script = path.join(
       __dirname,
@@ -134,7 +134,7 @@ class Win10Clipboard implements IClipboard {
       "win32_get_clipboard_text_plain.ps1"
     );
     const shell = getShell();
-    const data:string = await shell.runScript(script);
+    const data: string = await shell.runScript(script);
     return stripFinalNewline(data);
   }
 
@@ -145,7 +145,7 @@ class Win10Clipboard implements IClipboard {
       "win32_get_clipboard_text_html.ps1"
     );
     const shell = getShell();
-    const data:string = await shell.runScript(script);
+    const data: string = await shell.runScript(script);
     return stripFinalNewline(data);
   }
 }

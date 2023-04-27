@@ -8,7 +8,7 @@ enum ClipboardType {
 
 interface IClipboard {
   getContentType(): Promise<ClipboardType>;
-  getImage(imagePath:string): Promise<string>;
+  getImage(imagePath: string): Promise<string>;
   getTextPlain(): Promise<string>;
   getTextHtml(): Promise<string>;
   copyImage(imageFile: URL): Promise<boolean>;

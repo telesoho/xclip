@@ -1,6 +1,3 @@
-import * as url from "url";
-import * as http from "http";
-import * as https from "https";
 import * as path from "path";
 import { mkdir } from "shelljs";
 import * as fs from "fs";
@@ -10,7 +7,7 @@ import * as fs from "fs";
  * @param filePath
  */
 function prepareDirForFile(filePath: string) {
-  let dirName = path.dirname(filePath);
+  const dirName = path.dirname(filePath);
   try {
     mkdir("-p", dirName);
   } catch (error) {
@@ -93,23 +90,23 @@ function base64Encode(file: string) {
 }
 
 /**
- * 
- * @param input 
- * @returns 
+ *
+ * @param input
+ * @returns
  */
-function stripFinalNewline(input:string) {
-	const LF = typeof input === 'string' ? '\n' : '\n'.charCodeAt(0);
-	const CR = typeof input === 'string' ? '\r' : '\r'.charCodeAt(0);
+function stripFinalNewline(input: string) {
+  const LF = typeof input === "string" ? "\n" : "\n".charCodeAt(0);
+  const CR = typeof input === "string" ? "\r" : "\r".charCodeAt(0);
 
-	if (input[input.length - 1] === LF) {
-		input = input.slice(0, -1);
-	}
+  if (input[input.length - 1] === LF) {
+    input = input.slice(0, -1);
+  }
 
-	if (input[input.length - 1] === CR) {
-		input = input.slice(0, -1);
-	}
+  if (input[input.length - 1] === CR) {
+    input = input.slice(0, -1);
+  }
 
-	return input;
+  return input;
 }
 export {
   prepareDirForFile,
