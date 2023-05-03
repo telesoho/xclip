@@ -121,7 +121,6 @@ class Win10Shell implements IShell {
   }
 }
 
-
 class Win32Shell implements IShell {
   getClipboard(): IClipboard {
     return new Win32Clipboard();
@@ -146,13 +145,13 @@ class Win32Shell implements IShell {
   }
 }
 
-
 class WslShell implements IShell {
   getClipboard(): IClipboard {
     return new WslClipboard();
   }
   async runScript(script: string, parameters: string[]): Promise<string> {
-    const shell = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
+    const shell =
+      "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
     const command = [
       "-noprofile",
       "-noninteractive",

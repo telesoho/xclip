@@ -1,7 +1,7 @@
 import { fileURLToPath, URL } from "node:url";
 import { ClipboardType, IClipboard } from "../clipboard_interface";
 import { getShell, runCommand } from "../os";
-import * as path from "path"; 
+import * as path from "path";
 import { stripFinalNewline } from "../utils";
 
 async function pathToWin(path: string): Promise<string> {
@@ -9,7 +9,7 @@ async function pathToWin(path: string): Promise<string> {
   return stripFinalNewline(newPath);
 }
 
-async function pathToUnix (path: string): Promise<string> {
+async function pathToUnix(path: string): Promise<string> {
   const newPath = await runCommand("wslpath", ["-u", path]);
   return stripFinalNewline(newPath);
 }
