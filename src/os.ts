@@ -3,6 +3,8 @@ import { spawn } from "child_process";
 import isWsl from "is-wsl";
 import { IClipboard } from "./clipboard_interface";
 import { Win10Clipboard } from "./clipboard/win10";
+import { Win32Clipboard } from "./clipboard/win32";
+import { WslClipboard } from "./clipboard/wsl";
 import { LinuxClipboard } from "./clipboard/linux";
 import { DarwinClipboard } from "./clipboard/darwin";
 
@@ -36,6 +38,10 @@ export function getShell(): IShell {
       return new LinuxShell();
     case "darwin":
       return new DarwinShell();
+    case "win32":
+      return new Win32Shell();
+    case "wsl":
+      return new WslShell();
     default:
       throw new Error("Unsupported platform");
   }
@@ -46,7 +52,7 @@ export function getShell(): IShell {
  * @param shell
  * @param options
  */
-function runCommand(
+export function runCommand(
   shell: string,
   options: string[],
   timeout = 10000
@@ -97,6 +103,56 @@ class Win10Shell implements IShell {
   }
   async runScript(script: string, parameters: string[]): Promise<string> {
     const shell = "powershell";
+    const command = [
+      "-noprofile",
+      "-noninteractive",
+      "-nologo",
+      "-sta",
+      "-executionpolicy",
+      "bypass",
+      "-windowstyle",
+      "hidden",
+      "-file",
+      script,
+    ].concat(parameters);
+
+    const stdout = await runCommand(shell, command);
+    return stdout;
+  }
+}
+
+
+class Win32Shell implements IShell {
+  getClipboard(): IClipboard {
+    return new Win32Clipboard();
+  }
+  async runScript(script: string, parameters: string[]): Promise<string> {
+    const shell = "powershell";
+    const command = [
+      "-noprofile",
+      "-noninteractive",
+      "-nologo",
+      "-sta",
+      "-executionpolicy",
+      "bypass",
+      "-windowstyle",
+      "hidden",
+      "-file",
+      script,
+    ].concat(parameters);
+
+    const stdout = await runCommand(shell, command);
+    return stdout;
+  }
+}
+
+
+class WslShell implements IShell {
+  getClipboard(): IClipboard {
+    return new WslClipboard();
+  }
+  async runScript(script: string, parameters: string[]): Promise<string> {
+    const shell = "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe";
     const command = [
       "-noprofile",
       "-noninteractive",

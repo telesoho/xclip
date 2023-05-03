@@ -1,8 +1,18 @@
 import { fileURLToPath, URL } from "node:url";
 import { ClipboardType, IClipboard } from "../clipboard_interface";
-import { getShell } from "../os";
-import * as path from "path";
+import { getShell, runCommand } from "../os";
+import * as path from "path"; 
 import { stripFinalNewline } from "../utils";
+
+async function pathToWin(path: string): Promise<string> {
+  const newPath = await runCommand("wslpath", ["-m", path]);
+  return stripFinalNewline(newPath);
+}
+
+async function pathToUnix (path: string): Promise<string> {
+  const newPath = await runCommand("wslpath", ["-u", path]);
+  return stripFinalNewline(newPath);
+}
 
 /**
  * Detected the type of content in the clipboard
@@ -43,7 +53,7 @@ function detectType(types: string[]): ClipboardType {
   return ClipboardType.Unknown;
 }
 
-class Win32Clipboard implements IClipboard {
+class WslClipboard implements IClipboard {
   SCRIPT_PATH = "../../res/scripts/";
 
   async copyImage(imageFile: URL): Promise<boolean> {
@@ -123,8 +133,12 @@ class Win32Clipboard implements IClipboard {
       "win32_save_clipboard_png.ps1"
     );
     const shell = getShell();
-    const data: string = await shell.runScript(script, [imagePath]);
-    return stripFinalNewline(data);
+    const imagePathWin = await pathToWin(imagePath);
+    const data: string = await shell.runScript(script, [imagePathWin]);
+    if (stripFinalNewline(data) === imagePathWin) {
+      return imagePath;
+    }
+    return data;
   }
 
   async getTextPlain(): Promise<string> {
@@ -150,4 +164,4 @@ class Win32Clipboard implements IClipboard {
   }
 }
 
-export { Win32Clipboard, detectType };
+export { WslClipboard, detectType };
