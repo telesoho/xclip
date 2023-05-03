@@ -2,7 +2,6 @@
 
 A crossplatform xclip tools for copy & paste text, html and image.
 
-
 ## Requirements
 
 - `xclip` command be required (Linux)
@@ -14,31 +13,10 @@ A crossplatform xclip tools for copy & paste text, html and image.
 Install dependencies with npm:
 
 ```bash
-npm i
+npm i xclip --save
 ```
 
-## Test
-
-Test your code with Jest framework:
-
-```bash
-npm run test
-```
-
-## Build
-
-Build production (distribution) files in your **dist** folder:
-
-```bash
-npm run build
-```
-
-It generates CommonJS (in **dist/cjs** folder), ES Modules (in **dist/esm** folder), as well as TypeScript declaration files (in **dist/types** folder).
-
-
-## Samples
-
-please see the unit test:
+## Usage
 
 ```ts
 import xclip from 'xclip'
