@@ -1,6 +1,6 @@
 # xclip for crossplatform(mac, win, linux)
 
-A crossplatform xclip tools for copy & paste text, html and image.
+A crossplatform clipboard tools for copy & paste text, html and image.
 
 ## Requirements
 
