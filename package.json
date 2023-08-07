@@ -1,6 +1,6 @@
 {
   "name": "xclip",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A crossplatform clipboard tools for copy & paste text, html and image.",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
