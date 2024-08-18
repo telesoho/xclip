@@ -48,6 +48,12 @@ function detectType(types: string[]): ClipboardType {
     ClipboardType.Html,
     ClipboardType.Text,
   ];
+  if (
+    detectedTypes.has(ClipboardType.Image) &&
+    detectedTypes.has(ClipboardType.Html)
+  ) {
+    return ClipboardType.Html;
+  }
   for (const type of priorityOrdering) if (detectedTypes.has(type)) return type;
   // No known types detected
   return ClipboardType.Unknown;
