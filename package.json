@@ -17,7 +17,7 @@
     "build:types": "node tools/cleanup types && tsc -p config/tsconfig.types.json",
     "clean": "node tools/cleanup",
     "package": "npm run build && npm pack",
-    "test": "jest --no-cache --forceExit --runInBand",
+    "test": "jest --no-cache --forceExit --runInBand --detectOpenHandles",
     "test:cov": "jest --coverage --forceExit --no-cache --runInBand",
     "addscope": "node tools/packagejson name @telesoho/xclip"
   },
