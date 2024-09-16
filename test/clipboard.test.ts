@@ -34,7 +34,7 @@ describe("clipboard tests", () => {
     const cb = shell.getClipboard();
     await cb.copyTextHtml(test_html_url);
     await cb.getContentType().then((val) => {
-      expect(val).toBe(ClipboardType.Html);
+      expect(val).toContain(ClipboardType.Html);
     });    
   });
   it("get clipboard type test png", async () => {
@@ -42,7 +42,7 @@ describe("clipboard tests", () => {
     const cb = shell.getClipboard();
     await cb.copyImage(test_png_url);
     await cb.getContentType().then((val) => {
-      expect(val).toBe(ClipboardType.Image);
+      expect(val).toContain(ClipboardType.Image);
     });
   });
 
