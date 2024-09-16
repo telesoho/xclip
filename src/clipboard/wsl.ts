@@ -3,6 +3,7 @@ import { ClipboardType, IClipboard } from "../clipboard_interface";
 import { getShell, runCommand } from "../os";
 import * as path from "path";
 import { stripFinalNewline } from "../utils";
+import { BaseClipboard } from "./base_clipboard";
 
 async function pathToWin(path: string): Promise<string> {
   const newPath = await runCommand("wslpath", ["-m", path]);
@@ -14,52 +15,7 @@ async function pathToUnix(path: string): Promise<string> {
   return stripFinalNewline(newPath);
 }
 
-/**
- * Detected the type of content in the clipboard
- * Detect order: Image > Html > Text
- * @param types string[]
- * @returns ClipboardType
- */
-function detectType(types: string[]): ClipboardType {
-  if (!types) {
-    return ClipboardType.Unknown;
-  }
-
-  const detectedTypes = new Set();
-  for (const type of types) {
-    switch (type) {
-      case "PNG":
-      case "Bitmap":
-      case "DeviceIndependentBitmap":
-        detectedTypes.add(ClipboardType.Image);
-        break;
-      case "HTML Format":
-        detectedTypes.add(ClipboardType.Html);
-        break;
-      case "Text":
-      case "UnicodeText":
-        detectedTypes.add(ClipboardType.Text);
-        break;
-    }
-  }
-  // Set priority based on which to return type
-  const priorityOrdering = [
-    ClipboardType.Image,
-    ClipboardType.Html,
-    ClipboardType.Text,
-  ];
-  if (
-    detectedTypes.has(ClipboardType.Image) &&
-    detectedTypes.has(ClipboardType.Html)
-  ) {
-    return ClipboardType.Html;
-  }
-  for (const type of priorityOrdering) if (detectedTypes.has(type)) return type;
-  // No known types detected
-  return ClipboardType.Unknown;
-}
-
-class WslClipboard implements IClipboard {
+class WslClipboard extends BaseClipboard {
   SCRIPT_PATH = "../../res/scripts/";
 
   async copyImage(imageFile: URL): Promise<boolean> {
@@ -113,7 +69,27 @@ class WslClipboard implements IClipboard {
       return false;
     }
   }
-  async getContentType(): Promise<ClipboardType> {
+  onDetectType(types: string[]): Set<ClipboardType> {
+    const detectedTypes = new Set<ClipboardType>();
+    for (const type of types) {
+      switch (type) {
+        case "PNG":
+        case "Bitmap":
+        case "DeviceIndependentBitmap":
+          detectedTypes.add(ClipboardType.Image);
+          break;
+        case "HTML Format":
+          detectedTypes.add(ClipboardType.Html);
+          break;
+        case "Text":
+        case "UnicodeText":
+          detectedTypes.add(ClipboardType.Text);
+          break;
+      }
+    }
+    return detectedTypes;
+  }
+  async getContentType(): Promise<Set<ClipboardType> | ClipboardType> {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
@@ -126,7 +102,7 @@ class WslClipboard implements IClipboard {
       console.debug("getClipboardContentType", data);
       const types = data.split(/\r\n|\n|\r/);
 
-      return detectType(types);
+      return this.detectType(types);
     } catch (e) {
       return ClipboardType.Unknown;
     }
@@ -170,4 +146,4 @@ class WslClipboard implements IClipboard {
   }
 }
 
-export { WslClipboard, detectType };
+export { WslClipboard };

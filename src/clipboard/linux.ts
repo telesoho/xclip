@@ -3,53 +3,9 @@ import { ClipboardType, IClipboard } from "../clipboard_interface";
 import { getShell } from "../os";
 import * as path from "path";
 import { stripFinalNewline } from "../utils";
+import { BaseClipboard } from "./base_clipboard";
 
-/**
- * Detected the type of content in the clipboard
- * Detect order: Image > Html > Text
- * @param types string[]
- * @returns ClipboardType
- */
-function detectType(types: string[]): ClipboardType {
-  if (!types) {
-    return ClipboardType.Unknown;
-  }
-
-  const detectedTypes = new Set();
-  for (const type of types) {
-    switch (type) {
-      case "no xclip":
-        console.error("You need to install xclip command first.");
-        return ClipboardType.Unknown;
-      case "image/png":
-        detectedTypes.add(ClipboardType.Image);
-        break;
-      case "text/html":
-        detectedTypes.add(ClipboardType.Html);
-        break;
-      default:
-        detectedTypes.add(ClipboardType.Text);
-        break;
-    }
-  }
-  // Set priority based on which to return type
-  const priorityOrdering = [
-    ClipboardType.Image,
-    ClipboardType.Html,
-    ClipboardType.Text,
-  ];
-  if (
-    detectedTypes.has(ClipboardType.Image) &&
-    detectedTypes.has(ClipboardType.Html)
-  ) {
-    return ClipboardType.Html;
-  }
-  for (const type of priorityOrdering) if (detectedTypes.has(type)) return type;
-  // No known types detected
-  return ClipboardType.Unknown;
-}
-
-class LinuxClipboard implements IClipboard {
+class LinuxClipboard extends BaseClipboard {
   SCRIPT_PATH = "../../res/scripts/";
 
   async copyImage(imageFile: URL): Promise<boolean> {
@@ -103,7 +59,30 @@ class LinuxClipboard implements IClipboard {
       return false;
     }
   }
-  async getContentType(): Promise<ClipboardType> {
+  onDetectType(types: string[]): Set<ClipboardType> {
+    const detectedTypes = new Set<ClipboardType>();
+
+    for (const type of types) {
+      switch (type) {
+        case "no xclip":
+          console.error("You need to install xclip command first.");
+          detectedTypes.add(ClipboardType.Unknown);
+          return detectedTypes;
+        case "image/png":
+          detectedTypes.add(ClipboardType.Image);
+          break;
+        case "text/html":
+          detectedTypes.add(ClipboardType.Html);
+          break;
+        default:
+          detectedTypes.add(ClipboardType.Text);
+          break;
+      }
+    }
+    return detectedTypes;
+  }
+
+  async getContentType(): Promise<Set<ClipboardType> | ClipboardType> {
     const script = path.join(
       __dirname,
       this.SCRIPT_PATH,
@@ -116,7 +95,7 @@ class LinuxClipboard implements IClipboard {
       console.debug("getClipboardContentType", data);
       const types = data.split(/\r\n|\n|\r/);
 
-      return detectType(types);
+      return this.detectType(types);
     } catch (e) {
       return ClipboardType.Unknown;
     }
@@ -156,4 +135,4 @@ class LinuxClipboard implements IClipboard {
   }
 }
 
-export { LinuxClipboard, detectType };
+export { LinuxClipboard };
