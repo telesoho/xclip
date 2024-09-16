@@ -1,8 +1,8 @@
 jest.useRealTimers();
 // jest.unmock("../src/clipboard/win10");
 import { getShell } from "../src/os";
-import { ClipboardType, IClipboard } from "../src/clipboard_interface";
-import { fileURLToPath,pathToFileURL, URL } from "node:url";
+import { ClipboardType } from "../src/clipboard_interface";
+import { pathToFileURL } from "node:url";
 import * as fs from "fs";
 import * as utils from "../src/utils";
 import path from "path";
