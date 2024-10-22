@@ -33,16 +33,16 @@ function main {
     [Console]::WriteLine($imagePath)
 }
 
-try {
-    # For WIN10
-    $file = Get-Clipboard -Format FileDropList
-    if ($null -ne $file) {
-        Convert-Path $file
-        Exit 1
-    }
-} catch {
-    # For WIN7 WIN8 WIN10
-    main
-}
+# try {
+#     # For WIN10
+#     $file = Get-Clipboard -Format FileDropList
+#     if ($null -ne $file) {
+#         Convert-Path $file
+#         Exit 1
+#     }
+# } catch {
+#     # For WIN7 WIN8 WIN10
+#     main
+# }
 
 main
